@@ -1,47 +1,114 @@
 package expo.modules.irmanager
 
+// ConsumerIrManager
+import android.hardware.ConsumerIrManager.CarrierFrequencyRange
+import android.hardware.ConsumerIrManager
+
+// Android
+import android.content.Context
+
+// Expo Module Packages
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 
+private val ModuleName = "IRManager"
+
 class IRManagerModule : Module() {
-  // Each module class must implement the definition function. The definition consists of components
-  // that describes the module's functionality and behavior.
-  // See https://docs.expo.dev/modules/module-api for more details about available components.
-  override fun definition() = ModuleDefinition {
-    // Sets the name of the module that JavaScript code will use to refer to the module. Takes a string as an argument.
-    // Can be inferred from module's class name, but it's recommended to set it explicitly for clarity.
-    // The module will be accessible from `requireNativeModule('IRManager')` in JavaScript.
-    Name("IRManager")
+    override fun definition() = ModuleDefinition {
+        Name(ModuleName)
 
-    // Sets constant properties on the module. Can take a dictionary or a closure that returns a dictionary.
-    Constants(
-      "PI" to Math.PI
-    )
+        Function("hasIrBlaster"){
+            return@Function hasIrBlaster()
+        }
 
-    // Defines event names that the module can send to JavaScript.
-    Events("onChange")
+        Function("transmitProntoCode") {prontoHexCode: String -> 
+            val result = transmitProntoCode(prontoHexCode)
+            return@Function result
+        }
 
-    // Defines a JavaScript synchronous function that runs the native code on the JavaScript thread.
-    Function("hello") {
-      "Hello world! 👋"
+        Function("getCarrierFrequencies"){
+            return@Function getCarrierFrequencies()
+        }
+
+        Function("transmit"){carrierFrequency: Int, burstPattern: IntArray -> 
+            val result = transmit(carrierFrequency, burstPattern)
+            return@Function result
+        }
     }
 
-    // Defines a JavaScript function that always returns a Promise and whose native code
-    // is by default dispatched on the different thread than the JavaScript runtime runs on.
-    AsyncFunction("setValueAsync") { value: String ->
-      // Send an event to JavaScript.
-      sendEvent("onChange", mapOf(
-        "value" to value
-      ))
+    fun transmit(carrierFrequency: Int, burstPattern: IntArray): Pair<String, Boolean> {
+        val pattern: IntArray = IntArray(burstPattern.size)
+
+        for(i in 0 until burstPattern.size) {
+            pattern[i] = burstPattern[i].toInt()
+        }
+
+        try {
+            irManager.transmit(carrierFrequency, pattern)
+            return Pair("Transmission Successfull", true)
+        } catch(e: Exception) {
+            return Pair(e.toString(), false)
+        }
     }
 
-    // Enables the module to be used as a native view. Definition components that are accepted as part of
-    // the view definition: Prop, Events.
-    View(IRManagerView::class) {
-      // Defines a setter for the `name` prop.
-      Prop("name") { view: IRManagerView, prop: String ->
-        println(prop)
-      }
+    fun getCarrierFrequencies(): Any {
+        try {
+            val carrierFrequencyRanges = irManager.getCarrierFrequencies()
+            val frequenciesList = carrierFrequencyRanges.map {
+                mapOf(
+                    "minFrequency" to it.minFrequency,
+                    "maxFrequency" to it.maxFrequency
+                )
+            }
+
+            return Pair(frequenciesList, true)
+        } catch(e: Exception) {
+            return Pair(e.toString(), false)
+        }
     }
-  }
+
+    fun hasIrBlaster(): Boolean {
+        return irManager.hasIrEmitter()
+    }
+
+    fun transmitProntoCode(prontoHexCode: String): Pair<String, Boolean> {
+        val codeParts = prontoHexCode.split(" ")
+
+        val prontoClockFrequency = codeParts[1].toInt(radix = 16)
+        val exactCarrierFrequency = 1000000.0 / (prontoClockFrequency * 0.241246)
+
+        val carrierFrequency = exactCarrierFrequency.toInt()
+        val firstSequenceBurstPairs = codeParts[2].toInt(radix = 16)
+        val secondSequenceBurstPairs = codeParts[3].toInt(radix = 16)
+        val patternSize = (firstSequenceBurstPairs * 2) + (secondSequenceBurstPairs * 2)
+        val pattern = IntArray(patternSize)
+
+        var i = 0
+        var firstPairIndex = 4
+        var secondPairIndex = firstPairIndex + (firstSequenceBurstPairs * 2)
+
+        for (j in firstPairIndex until secondPairIndex) {
+            pattern[i] = codeParts[j].toInt(radix = 16) * (1000000 / carrierFrequency)
+            i++
+        }
+
+//        secondPairIndex = secondPairIndex + (secondSequenceBurstPairs * 2)
+        for (j in secondPairIndex until secondPairIndex + (secondSequenceBurstPairs * 2)) {
+            pattern[i] = codeParts[j].toInt(radix = 16) * (1000000 / carrierFrequency)
+            i++
+        }
+
+        try {
+            irManager.transmit(carrierFrequency, pattern)
+            return Pair("Transmission Successfull", true)
+        } catch (e: Exception) {
+            return Pair(e.toString(), false)
+        }
+    }
+
+    val context: Context
+        get() = requireNotNull(appContext.reactContext) {"React Application Context is null"}
+
+    private val irManager: ConsumerIrManager
+        get() = context.getSystemService(Context.CONSUMER_IR_SERVICE) as ConsumerIrManager
 }

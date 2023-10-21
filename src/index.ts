@@ -1,26 +1,23 @@
-import { NativeModulesProxy, EventEmitter, Subscription } from 'expo-modules-core';
+// import { NativeModulesProxy, EventEmitter, Subscription } from 'expo-modules-core';
+import IRManagerModule from "./IRManagerModule"
 
-// Import the native module. On web, it will be resolved to IRManager.web.ts
-// and on native platforms to IRManager.ts
-import IRManagerModule from './IRManagerModule';
-import IRManagerView from './IRManagerView';
-import { ChangeEventPayload, IRManagerViewProps } from './IRManager.types';
-
-// Get the native constant value.
-export const PI = IRManagerModule.PI;
-
-export function hello(): string {
-  return IRManagerModule.hello();
+export function hasIrBlaster(): boolean {
+    return IRManagerModule.hasIrBlaster()
 }
 
-export async function setValueAsync(value: string) {
-  return await IRManagerModule.setValueAsync(value);
+type TTransmitProntoCode = [ string, boolean ]
+export default function transmitProntoCode(prontoHexCode: string): TTransmitProntoCode {
+    return IRManagerModule.transmitProntoCode(prontoHexCode)
 }
 
-const emitter = new EventEmitter(IRManagerModule ?? NativeModulesProxy.IRManager);
-
-export function addChangeListener(listener: (event: ChangeEventPayload) => void): Subscription {
-  return emitter.addListener<ChangeEventPayload>('onChange', listener);
+type TMapCarrier = {
+    "maxFrequency": number,
+    "minFrequency": number
+}
+export function getCarrierFrequencies(): [ TMapCarrier[] | string, boolean ] {
+    return IRManagerModule.getCarrierFrequencies()
 }
 
-export { IRManagerView, IRManagerViewProps, ChangeEventPayload };
+export function transmit(carrierFrequency: number, burstPattern: number[]) {
+    return IRManagerModule.transmit(carrierFrequency, burstPattern)
+}
