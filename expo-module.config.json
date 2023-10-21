@@ -1,0 +1,9 @@
+{
+  "platforms": ["ios", "android", "web"],
+  "ios": {
+    "modules": ["IRManagerModule"]
+  },
+  "android": {
+    "modules": ["expo.modules.irmanager.IRManagerModule"]
+  }
+}

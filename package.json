@@ -1,0 +1,42 @@
+{
+  "name": "ir-manager",
+  "version": "0.1.0",
+  "description": "A small wrapper Expo Module for Android's ConsumerIrManager that allow Expo application to transmit IR signal using built-in IRBlaster/IREmitter",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "scripts": {
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "lint": "expo-module lint",
+    "test": "expo-module test",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module",
+    "open:ios": "open -a \"Xcode\" example/ios",
+    "open:android": "open -a \"Android Studio\" example/android"
+  },
+  "keywords": [
+    "react-native",
+    "expo",
+    "ir-manager",
+    "IRManager"
+  ],
+  "repository": "https://github.com/sachin-acharya-projects/IRManager",
+  "bugs": {
+    "url": "https://github.com/sachin-acharya-projects/IRManager/issues"
+  },
+  "author": "Sachin Acharya <acharyaraj71+irmanager@gmail.com> (https://github.com/sachin-acharya-projects)",
+  "license": "MIT",
+  "homepage": "https://github.com/sachin-acharya-projects/IRManager#readme",
+  "dependencies": {},
+  "devDependencies": {
+    "@types/react": "^18.0.25",
+    "expo-module-scripts": "^3.0.11",
+    "expo-modules-core": "^1.5.11"
+  },
+  "peerDependencies": {
+    "expo": "*",
+    "react": "*",
+    "react-native": "*"
+  }
+}
