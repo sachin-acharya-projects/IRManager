@@ -1,6 +1,6 @@
 {
   "name": "ir-manager",
-  "version": "0.1.0",
+  "version": "1.1.0",
   "description": "A small wrapper Expo Module for Android's ConsumerIrManager that allow Expo application to transmit IR signal using built-in IRBlaster/IREmitter",
   "main": "build/index.js",
   "types": "build/index.d.ts",
