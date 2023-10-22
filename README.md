@@ -23,13 +23,17 @@ npm install @sachin-acharya-projects/ir-manager
 
 ### Configure for iOS
 
-Run `npx pod-install` after installing the npm package.
+```
+IOS Not Supported
+```
 
 
 ### Configure for Android
+```shell
+npx expo prebuild
+```
 
+### Note
+To use this module, application must be run locally.
 
-
-# Contributing
-
-Contributions are very welcome! Please refer to guidelines described in the [contributing guide]( https://github.com/expo/expo#contributing).
+[For Usage guidance, follow this documentation](./example/README.md)

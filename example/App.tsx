@@ -1,9 +1,9 @@
 import { StatusBar } from "expo-status-bar"
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native"
+import { useEffect } from "react"
 
 import transmitProntoCode from "ir-manager"
 import * as IRManager from "ir-manager"
-import { useEffect } from "react"
 
 const SAMSUNG_TURN_ON_PRONTO_CODE =
     "0000 006d 0022 0003 00a9 00a8 0015 003f 0015 003f 0015 003f 0015 0015 0015 0015 0015 0015 0015 0015 0015 0015 0015 003f 0015 003f 0015 003f 0015 0015 0015 0015 0015 0015 0015 0015 0015 0015 0015 0015 0015 003f 0015 0015 0015 0015 0015 0015 0015 0015 0015 0015 0015 0015 0015 0040 0015 0015 0015 003f 0015 003f 0015 003f 0015 003f 0015 003f 0015 003f 0015 0702 00a9 00a8 0015 0015 0015 0e6e"
